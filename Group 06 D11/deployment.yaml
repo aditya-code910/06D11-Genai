@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manufacturing-app
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: manufacturing
+  template:
+    metadata:
+      labels:
+        app: manufacturing
+    spec:
+      containers:
+      - name: manufacturing-container
+        image: aaditibhale/manufacturing-app:v12
+        ports:
+        - containerPort: 5000
+
+       
+        env:
+          - name: APP_VERSION
+            value: "v12"
+          - name: HF_API_KEY
+            
+          - name: OPENROUTER_API_KEY
+            
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 20
